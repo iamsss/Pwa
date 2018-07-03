@@ -1,4 +1,6 @@
-var CACHE_STATIC_NAME = 'static-v2.26';
+importScripts('/src/js/idb.js');
+
+var CACHE_STATIC_NAME = 'static-v2.29';
 var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 var STATIC_FILES = [
     '/',
@@ -8,6 +10,7 @@ var STATIC_FILES = [
     '/src/js/feed.js',
     '/src/js/promise.js',
     '/src/js/fetch.js',
+    '/src/js/idb.js',
     '/src/js/material.min.js',
     '/src/css/app.css',
     '/src/css/feed.css',
@@ -16,6 +19,13 @@ var STATIC_FILES = [
     'https://fonts.googleapis.com/icon?family=Material+Icons',
     'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
 ];
+
+var dbPromise = idb.open('posts-store', 1 , function
+(db){
+    if(!db.objectStoreNames.contains('posts')) { 
+    db.createObjectStore('posts', {keyPath: 'id'});
+    }
+})
 
 // function trimCache(cacheName, maxItems) {
 //     caches.open(cacheName)
@@ -74,15 +84,24 @@ self.addEventListener('fetch', function (event) {
     // Cache then Network Strategy Only this part
     if (event.request.url.indexOf(url) > -1) {
         event.respondWith(
-            caches.open(CACHE_DYNAMIC_NAME)
-            .then(function (cache) {
-                return fetch(event.request)
+            fetch(event.request)
                     .then(function (res) {
-                        // trimCache(CACHE_DYNAMIC_NAME,3);
-                        cache.put(event.request, res.clone());
+                        var clonedRes = res.clone();
+                        clonedRes.json()
+                        .then(function(data){
+                            dbPromise.then(function(db){
+                               
+                            var tx = db.transaction('posts','readwrite');
+                            var store = tx.objectStore('posts');
+                           
+                            for( var key in data){
+                                    store.put(data[key]);         
+                            }
+                            return tx.complete;
+                        })
+                        })
                         return res;
-                    })
-            })
+                    }) 
         );
     }
     // Cache Only Strategy For Static File
