@@ -1,0 +1,5 @@
+In Cache we store the response 
+we get back as Post Request
+
+We cannot post real data to server 
+when offline or not after comming online with just cache
