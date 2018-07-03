@@ -1,4 +1,4 @@
-var CACHE_STATIC_NAME = 'static-v2.12';
+var CACHE_STATIC_NAME = 'static-v2.13';
 var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 
 
@@ -45,6 +45,56 @@ self.addEventListener('activate', function (event) {
         })
     );
 });
+
+
+self.addEventListener('fetch', function(event){
+   var url = 'https://httpbin.org/get';
+// Cache then Network Strategy Only this part
+   if(event.request.url.indexOf(url) > -1) {
+    event.respondWith(
+        caches.open(CACHE_DYNAMIC_NAME)
+            .then(function(cache){
+                return fetch(event.request)
+                .then(function(res){
+                    cache.put(event.request,res.clone());
+                    return res;
+                })
+            })
+);
+   }
+   // cache with network fallback strategy
+    else {
+    event.respondWith(
+            caches.match(event.request) //To match current request with cached request it
+		.then(function(response) {
+			//If response found return it, else fetch again.
+            if(response) {
+                return response
+            } else {
+                // Applying Dynamic caching
+                return fetch(event.request)
+                .then(function(res){
+  return caches.open(CACHE_DYNAMIC_NAME)
+    .then(function(cache){
+        cache.put(event.request.url,res.clone())
+        return res;
+    }).catch(function(){
+
+    });
+});
+            }
+		})
+		.catch(function(error) {
+return caches.open(CACHE_STATIC_NAME)
+                .then(function(cache){
+                   return cache.match('/offline.html')
+           });
+		})
+    );
+   }
+
+});
+
 
 // cache with network fallback strategy --> Pretty Good
 
@@ -95,33 +145,33 @@ self.addEventListener('activate', function (event) {
 // Network with Cache fallback strategy --> But 
 // in this we are not using advantage of performance in cache
 // And if connection is slow than we face horrible u.i experiance
-self.addEventListener('fetch', function (event) {
-    event.respondWith(
-        fetch(event.request)
-        .then(function (res) {
-            return caches.open(CACHE_DYNAMIC_NAME)
-                .then(function (cache) {
-                    cache.put(event.request.url, res.clone())
-                    return res;
-                }).catch(function () {
+// self.addEventListener('fetch', function (event) {
+//     event.respondWith(
+//         fetch(event.request)
+//         .then(function (res) {
+//             return caches.open(CACHE_DYNAMIC_NAME)
+//                 .then(function (cache) {
+//                     cache.put(event.request.url, res.clone())
+//                     return res;
+//                 }).catch(function () {
 
-                });
+//                 });
 
-        })
-        .catch(function (err) {
-            return caches.match(event.request) //To match current request with cached request it
-                .then(function (response) {
-                    //If response found return it, else fetch again.
-                    if (response) {
-                        return response
-                    } else {
+//         })
+//         .catch(function (err) {
+//             return caches.match(event.request) //To match current request with cached request it
+//                 .then(function (response) {
+//                     //If response found return it, else fetch again.
+//                     if (response) {
+//                         return response
+//                     } else {
 
-                        return caches.open(CACHE_STATIC_NAME)
-                            .then(function (cache) {
-                                return cache.match('/offline.html')
-                            })
-                    }
-                })
-        })
-    )
-});
+//                         return caches.open(CACHE_STATIC_NAME)
+//                             .then(function (cache) {
+//                                 return cache.match('/offline.html')
+//                             })
+//                     }
+//                 })
+//         })
+//     )
+// });
