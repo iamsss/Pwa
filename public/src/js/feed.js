@@ -29,17 +29,23 @@ function closeCreatePostModal() {
 // Disabling On Demand Cache
 // function onSaveButtonClicked(event){
 //   console.log('Clicked');
-//   if('caches' in window){
-//     caches.open('user-requested')
-//     .then(function(cache){
-//       cache.add('https://httpbin.org/get');
-//       cache.add('/src/images/sf-boat.jpg');
-//     })
+  // if('caches' in window){
+  //   caches.open('user-requested')
+  //   .then(function(cache){
+  //     cache.add('https://httpbin.org/get');
+  //     cache.add('/src/images/sf-boat.jpg');
+  //   })
 //   }
 // }
 shareImageButton.addEventListener('click', openCreatePostModal);
 
 closeCreatePostModalButton.addEventListener('click', closeCreatePostModal);
+
+function clearCards() {
+  while(sharedMomentsArea.hasChildNodes()){
+    sharedMomentsArea.removeChild(sharedMomentsArea.lastChild);
+  }
+}
 
 function createCard() {
   var cardWrapper = document.createElement('div');
@@ -49,7 +55,7 @@ function createCard() {
   cardTitle.style.backgroundImage = 'url("/src/images/sf-boat.jpg")';
   cardTitle.style.backgroundSize = 'cover';
   cardTitle.style.height = '180px';
-  cardTitle.style.color = 'white';
+  cardTitle.style.color = 'pink';
   cardWrapper.appendChild(cardTitle);
   var cardTitleTextElement = document.createElement('h2');
   cardTitleTextElement.className = 'mdl-card__title-text';
@@ -68,10 +74,33 @@ function createCard() {
   sharedMomentsArea.appendChild(cardWrapper);
 }
 
-fetch('https://httpbin.org/get')
+var url  = 'https://httpbin.org/get';
+var networkDataReceived = false;
+
+fetch(url)
   .then(function(res) {
     return res.json();
   })
   .then(function(data) {
+    console.log('Fetch data from web',data);
+    networkDataReceived = true;
+    clearCards();
     createCard();
   });
+
+
+  if('caches' in window){
+    caches.match(url)
+      .then(function(response) {
+        if(response){
+          return response.json();
+        }
+      })
+      .then(function(data){
+        if(!networkDataReceived){
+        console.log('Fetching Data from Cache',data);
+        clearCards()
+        createCard();
+        }
+      })
+  }
