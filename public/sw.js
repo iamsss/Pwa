@@ -46,32 +46,41 @@ self.addEventListener('activate', function(event){
     );
 });
 
+// Network with cache fallback strategy --> Pretty Good
+
+// self.addEventListener('fetch', function(event){
+//     event.respondWith(
+//         caches.match(event.request) //To match current request with cached request it
+// 		.then(function(response) {
+// 			//If response found return it, else fetch again.
+//             if(response) {
+//                 return response
+//             } else {
+//                 // Applying Dynamic caching
+//                 return fetch(event.request)
+//                 .then(function(res){
+//                   return caches.open(CACHE_DYNAMIC_NAME)
+//                     .then(function(cache){
+//                         cache.put(event.request.url,res.clone())
+//                         return res;
+//                     }).catch(function(){
+                        
+//                     });
+//                 });
+//             }
+// 		})
+// 		.catch(function(error) {
+// 			return caches.open(CACHE_STATIC_NAME)
+//                             .then(function(cache){
+//                                return cache.match('/offline.html')
+//            });
+// 		})
+//     )
+// });
+
+// CACHE ONLY STRATEGY --> Not Useful in many cases
 self.addEventListener('fetch', function(event){
     event.respondWith(
-        caches.match(event.request) //To match current request with cached request it
-		.then(function(response) {
-			//If response found return it, else fetch again.
-            if(response) {
-                return response
-            } else {
-                // Applying Dynamic caching
-                return fetch(event.request)
-                .then(function(res){
-                  return caches.open(CACHE_DYNAMIC_NAME)
-                    .then(function(cache){
-                        cache.put(event.request.url,res.clone())
-                        return res;
-                    }).catch(function(){
-                        
-                    });
-                });
-            }
-		})
-		.catch(function(error) {
-			return caches.open(CACHE_STATIC_NAME)
-                            .then(function(cache){
-                               return cache.match('/offline.html')
-           });
-		})
-    )
-});
+        caches.match(event.request)
+    )}
+);
