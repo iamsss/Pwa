@@ -79,8 +79,15 @@ self.addEventListener('activate', function(event){
 // });
 
 // CACHE ONLY STRATEGY --> Not Useful in many cases
+// self.addEventListener('fetch', function(event){
+//     event.respondWith(
+//         caches.match(event.request)
+//     )}
+// );
+
+//Network Only Strategy --> Boring no use of sw
 self.addEventListener('fetch', function(event){
     event.respondWith(
-        caches.match(event.request)
+        fetch(event.request)
     )}
 );
