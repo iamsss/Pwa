@@ -1,4 +1,4 @@
-var CACHE_STATIC_NAME = 'static-v2.6';
+var CACHE_STATIC_NAME = 'static-v2.10';
 var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 
 
@@ -46,7 +46,7 @@ self.addEventListener('activate', function(event){
     );
 });
 
-// Network with cache fallback strategy --> Pretty Good
+// cache with network fallback strategy --> Pretty Good
 
 // self.addEventListener('fetch', function(event){
 //     event.respondWith(
@@ -59,20 +59,20 @@ self.addEventListener('activate', function(event){
 //                 // Applying Dynamic caching
 //                 return fetch(event.request)
 //                 .then(function(res){
-//                   return caches.open(CACHE_DYNAMIC_NAME)
-//                     .then(function(cache){
-//                         cache.put(event.request.url,res.clone())
-//                         return res;
-//                     }).catch(function(){
+                //   return caches.open(CACHE_DYNAMIC_NAME)
+                //     .then(function(cache){
+                //         cache.put(event.request.url,res.clone())
+                //         return res;
+                //     }).catch(function(){
                         
-//                     });
-//                 });
+                //     });
+                // });
 //             }
 // 		})
 // 		.catch(function(error) {
-// 			return caches.open(CACHE_STATIC_NAME)
-//                             .then(function(cache){
-//                                return cache.match('/offline.html')
+			// return caches.open(CACHE_STATIC_NAME)
+            //                 .then(function(cache){
+            //                    return cache.match('/offline.html')
 //            });
 // 		})
 //     )
@@ -86,8 +86,42 @@ self.addEventListener('activate', function(event){
 // );
 
 //Network Only Strategy --> Boring no use of sw
+// self.addEventListener('fetch', function(event){
+//     event.respondWith(
+//         fetch(event.request)
+//     )}
+// );
+
+// Network with Cache fallback strategy --> But 
+// in this we are not using advantage of performance in cache
+// And if connection is slow than we face horrible u.i experiance
 self.addEventListener('fetch', function(event){
     event.respondWith(
         fetch(event.request)
+            .then(function(res){
+                return caches.open(CACHE_DYNAMIC_NAME)
+                .then(function(cache){
+                    cache.put(event.request.url,res.clone())
+                    return res;
+                }).catch(function(){
+                    
+                });
+
+            })
+        .catch(function(err){
+              return caches.match(event.request) //To match current request with cached request it
+		.then(function(response) {
+			//If response found return it, else fetch again.
+            if(response) {
+                return response
+            } else {
+               
+			return caches.open(CACHE_STATIC_NAME)
+                            .then(function(cache){
+                               return cache.match('/offline.html')
+           })
+        }
+        })
+    })
     )}
 );
