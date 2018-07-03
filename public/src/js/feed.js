@@ -26,16 +26,17 @@ function closeCreatePostModal() {
   createPostArea.style.display = 'none';
 }
 
-function onSaveButtonClicked(event){
-  console.log('Clicked');
-  if('caches' in window){
-    caches.open('user-requested')
-    .then(function(cache){
-      cache.add('https://httpbin.org/get');
-      cache.add('/src/images/sf-boat.jpg');
-    })
-  }
-}
+// Disabling On Demand Cache
+// function onSaveButtonClicked(event){
+//   console.log('Clicked');
+//   if('caches' in window){
+//     caches.open('user-requested')
+//     .then(function(cache){
+//       cache.add('https://httpbin.org/get');
+//       cache.add('/src/images/sf-boat.jpg');
+//     })
+//   }
+// }
 shareImageButton.addEventListener('click', openCreatePostModal);
 
 closeCreatePostModalButton.addEventListener('click', closeCreatePostModal);
@@ -59,10 +60,10 @@ function createCard() {
   cardSupportingText.textContent = 'In San Francisco';
   cardSupportingText.style.textAlign = 'center';
   cardWrapper.appendChild(cardSupportingText);
-  var cardSaveButton = document.createElement('button');
-  cardSaveButton.textContent = 'Save';
-  cardSaveButton.addEventListener('click', onSaveButtonClicked)
-  cardSupportingText.appendChild(cardSaveButton);
+  // var cardSaveButton = document.createElement('button');
+  // cardSaveButton.textContent = 'Save';
+  // cardSaveButton.addEventListener('click', onSaveButtonClicked)
+  // cardSupportingText.appendChild(cardSaveButton);
   componentHandler.upgradeElement(cardWrapper);
   sharedMomentsArea.appendChild(cardWrapper);
 }

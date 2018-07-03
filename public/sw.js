@@ -1,4 +1,4 @@
-var CACHE_STATIC_NAME = 'static-v2.1';
+var CACHE_STATIC_NAME = 'static-v2.2';
 var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 
 
@@ -55,15 +55,15 @@ self.addEventListener('fetch', function(event){
             } else {
                 // Applying Dynamic caching
                 return fetch(event.request)
-                // .then(function(res){
-                //   return caches.open(CACHE_DYNAMIC_NAME)
-                //     .then(function(cache){
-                //         cache.put(event.request.url,res.clone())
-                //         return res;
-                //     }).catch(function(){
+                .then(function(res){
+                  return caches.open(CACHE_DYNAMIC_NAME)
+                    .then(function(cache){
+                        cache.put(event.request.url,res.clone())
+                        return res;
+                    }).catch(function(){
 
-                //     });
-                // });
+                    });
+                });
             }
 		})
 		.catch(function(error) {
