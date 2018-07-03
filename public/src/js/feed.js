@@ -3,7 +3,20 @@ var createPostArea = document.querySelector('#create-post');
 var closeCreatePostModalButton = document.querySelector('#close-create-post-modal-btn');
 var sharedMomentsArea = document.querySelector('#shared-moments');
 
+function UnRegisterSw(){
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    for(let registration of registrations) {
+            registration.unregister()
+    }}).catch(function(err) {
+        console.log('Service Worker registration failed: ', err);
+    });
+}
+}
+
 function openCreatePostModal() {
+  
+  UnRegisterSw();
   createPostArea.style.display = 'block';
   if (deferredPrompt) {
     deferredPrompt.prompt();
