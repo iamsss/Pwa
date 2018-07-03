@@ -60,23 +60,23 @@ function clearCards() {
   }
 }
 
-function createCard() {
+function createCard(data) {
   var cardWrapper = document.createElement('div');
   cardWrapper.className = 'shared-moment-card mdl-card mdl-shadow--2dp';
   var cardTitle = document.createElement('div');
   cardTitle.className = 'mdl-card__title';
-  cardTitle.style.backgroundImage = 'url("/src/images/sf-boat.jpg")';
+  cardTitle.style.backgroundImage = 'url('+ data.image +')';
   cardTitle.style.backgroundSize = 'cover';
   cardTitle.style.height = '180px';
-  cardTitle.style.color = 'pink';
+  cardTitle.style.color = 'white';
   cardWrapper.appendChild(cardTitle);
   var cardTitleTextElement = document.createElement('h2');
   cardTitleTextElement.className = 'mdl-card__title-text';
-  cardTitleTextElement.textContent = 'San Francisco Trip';
+  cardTitleTextElement.textContent = data.title;
   cardTitle.appendChild(cardTitleTextElement);
   var cardSupportingText = document.createElement('div');
   cardSupportingText.className = 'mdl-card__supporting-text';
-  cardSupportingText.textContent = 'In San Francisco';
+  cardSupportingText.textContent = data.location;
   cardSupportingText.style.textAlign = 'center';
   cardWrapper.appendChild(cardSupportingText);
   // var cardSaveButton = document.createElement('button');
@@ -87,19 +87,16 @@ function createCard() {
   sharedMomentsArea.appendChild(cardWrapper);
 }
 
-var url  = 'https://httpbin.org/post';
+var url  = 'https://loindia-6cb36.firebaseio.com/posts.json';
 var networkDataReceived = false;
 
-fetch(url,{
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json' 
-  },
-  body: JSON.stringify({
-    message: 'Some Message'
-  })
-})
+function updateUI(data) {
+  for(var i = 0; i < data.length; i++) {
+    createCard(data[i]);
+  }
+}
+
+fetch(url)
   .then(function(res) {
     return res.json();
   })
@@ -107,7 +104,11 @@ fetch(url,{
     console.log('Fetch data from web',data);
     networkDataReceived = true;
     clearCards();
-    createCard();
+    var DataArray = [];
+    for(var key in data) {
+      DataArray.push(data[key]);
+    }
+    updateUI(DataArray);
   });
 
 
@@ -122,7 +123,11 @@ fetch(url,{
         if(!networkDataReceived){
         console.log('Fetching Data from Cache',data);
         clearCards()
-        createCard();
+        var DataArray = [];
+        for(var key in data) {
+          DataArray.push(data[key]);
+        }
+        updateUI(DataArray);
         }
       })
   }

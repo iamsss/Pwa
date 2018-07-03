@@ -1,4 +1,4 @@
-var CACHE_STATIC_NAME = 'static-v2.24';
+var CACHE_STATIC_NAME = 'static-v2.26';
 var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 var STATIC_FILES = [
     '/',
@@ -70,7 +70,7 @@ self.addEventListener('activate', function (event) {
 
 
 self.addEventListener('fetch', function (event) {
-    var url = 'https://httpbin.org/get';
+    var url = 'https://loindia-6cb36.firebaseio.com/posts';
     // Cache then Network Strategy Only this part
     if (event.request.url.indexOf(url) > -1) {
         event.respondWith(
