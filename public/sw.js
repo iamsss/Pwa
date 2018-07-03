@@ -35,7 +35,21 @@ self.addEventListener('fetch', function(event){
         caches.match(event.request) //To match current request with cached request it
 		.then(function(response) {
 			//If response found return it, else fetch again.
-			return response || fetch(event.request);
+            if(response) {
+                return response
+            } else {
+                // Applying Dynamic caching
+                return fetch(event.request)
+                .then(function(res){
+                  return caches.open('dynamic')
+                    .then(function(cache){
+                        cache.put(event.request.url,res.clone())
+                        return res;
+                    }).catch(function(){
+                        
+                    });
+                });
+            }
 		})
 		.catch(function(error) {
 			console.log("Error: ", error);
