@@ -1,4 +1,4 @@
-var CACHE_STATIC_NAME = 'static-v2.20';
+var CACHE_STATIC_NAME = 'static-v2.21';
 var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 var STATIC_FILES = [
     '/',
@@ -17,9 +17,23 @@ var STATIC_FILES = [
     'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
 ];
 
+function trimCache(cacheName, maxItems) {
+    caches.open(cacheName)
+        .then(function (cache) {
+            return cache.keys()
+            .then(function (keys) {
+                if (keys.length > maxItems) {
+                    cache.delete(keys[0])
+                        .then(trimCache(cacheName, maxItems));
+                }
+            })
+        });
+        
+}
+
 function isInArray(string, array) {
     for (var i = 0; i < array.length; i++) {
-        if(array[i] === string){
+        if (array[i] === string) {
             return true;
         }
     }
@@ -55,60 +69,62 @@ self.addEventListener('activate', function (event) {
 });
 
 
-self.addEventListener('fetch', function(event){
-   var url = 'https://httpbin.org/get';
-// Cache then Network Strategy Only this part
-   if(event.request.url.indexOf(url) > -1) {
-    event.respondWith(
-        caches.open(CACHE_DYNAMIC_NAME)
-            .then(function(cache){
+self.addEventListener('fetch', function (event) {
+    var url = 'https://httpbin.org/get';
+    // Cache then Network Strategy Only this part
+    if (event.request.url.indexOf(url) > -1) {
+        event.respondWith(
+            caches.open(CACHE_DYNAMIC_NAME)
+            .then(function (cache) {
                 return fetch(event.request)
-                .then(function(res){
-                    cache.put(event.request,res.clone());
-                    return res;
-                })
+                    .then(function (res) {
+                        trimCache(CACHE_DYNAMIC_NAME,3);
+                        cache.put(event.request, res.clone());
+                        return res;
+                    })
             })
-);
-   }
-   // Cache Only Strategy For Static File
-   else if(isInArray(event.request.url,STATIC_FILES)){
+        );
+    }
+    // Cache Only Strategy For Static File
+    else if (isInArray(event.request.url, STATIC_FILES)) {
         event.respondWith(
             caches.match(event.request)
         )
     }
-   // cache with network fallback strategy
+    // cache with network fallback strategy
     else {
-    event.respondWith(
+        event.respondWith(
             caches.match(event.request) //To match current request with cached request it
-		.then(function(response) {
-			//If response found return it, else fetch again.
-            if(response) {
-                return response
-            } else {
-                // Applying Dynamic caching
-                return fetch(event.request)
-                .then(function(res){
-  return caches.open(CACHE_DYNAMIC_NAME)
-    .then(function(cache){
-        cache.put(event.request.url,res.clone())
-        return res;
-    }).catch(function(){
+            .then(function (response) {
+                //If response found return it, else fetch again.
+                if (response) {
+                    return response
+                } else {
+                    // Applying Dynamic caching
+                    return fetch(event.request)
+                        .then(function (res) {
+                            return caches.open(CACHE_DYNAMIC_NAME)
+                                .then(function (cache) {
+                                    trimCache(CACHE_DYNAMIC_NAME,3);
+                                    cache.put(event.request.url, res.clone())
+                                    return res;
+                                }).catch(function () {
 
-    });
-});
-            }
-		})
-		.catch(function(error) {
-            
-return caches.open(CACHE_STATIC_NAME)
-                .then(function(cache){
-                    if(event.request.headers.get('accept').includes('text/html')) {
-                    return cache.match('/offline.html')
-                    }
-                });
-		})
-    );
-   }
+                                });
+                        });
+                }
+            })
+            .catch(function (error) {
+
+                return caches.open(CACHE_STATIC_NAME)
+                    .then(function (cache) {
+                        if (event.request.headers.get('accept').includes('text/html')) {
+                            return cache.match('/offline.html')
+                        }
+                    });
+            })
+        );
+    }
 
 });
 
