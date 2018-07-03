@@ -1,4 +1,4 @@
-var CACHE_STATIC_NAME = 'static-v2.16';
+var CACHE_STATIC_NAME = 'static-v2.20';
 var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 var STATIC_FILES = [
     '/',
@@ -102,7 +102,7 @@ self.addEventListener('fetch', function(event){
             
 return caches.open(CACHE_STATIC_NAME)
                 .then(function(cache){
-                    if(event.request.url.indexOf('/help')){
+                    if(event.request.headers.get('accept').includes('text/html')) {
                     return cache.match('/offline.html')
                     }
                 });
