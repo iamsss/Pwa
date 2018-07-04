@@ -1,0 +1,7 @@
+## Install Firebase admmin and Cors
+
+    >> cd functions
+    >> npm install firebase-admin cors --save
+
+## Deploying Firebase Project 
+    >> firebase deploy

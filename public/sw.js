@@ -1,7 +1,7 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/utility.js');
 
-var CACHE_STATIC_NAME = 'static-v2.45';
+var CACHE_STATIC_NAME = 'static-v2.46';
 var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 var STATIC_FILES = [
     '/',
@@ -77,7 +77,7 @@ self.addEventListener('activate', function (event) {
 
 
 self.addEventListener('fetch', function (event) {
-    var url = 'https://loindia-6cb36.firebaseio.com/posts';
+    var url = 'https://us-central1-loindia-6cb36.cloudfunctions.net/storePostData';
     // Cache then Network Strategy Only this part
     if (event.request.url.indexOf(url) > -1) {
         event.respondWith(
@@ -227,7 +227,7 @@ self.addEventListener('sync', function(event){
         event.waitUntil(
             readAllData('sync-posts').then(function(data){
                 for(var dt of data) {
-                    fetch('https://loindia-6cb36.firebaseio.com/posts.json', {
+                    fetch('https://us-central1-loindia-6cb36.cloudfunctions.net/storePostData', {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
@@ -242,8 +242,11 @@ self.addEventListener('sync', function(event){
                       }).then(function(res) {
                         console.log('Data sent',res);
                         if(res.ok){
-                            deleteItemsFromData('sync-posts',dt.id);
-                        }
+                            res.json()
+                                .then(function(resData){
+                                    deleteItemsFromData('sync-posts',resData.id);
+                                })
+                            }
                       })
                       .catch(function(err) {
                         console.log('Error while sending data', err);

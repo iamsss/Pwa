@@ -92,7 +92,7 @@ function createCard(data) {
   sharedMomentsArea.appendChild(cardWrapper);
 }
 
-var url  = 'https://loindia-6cb36.firebaseio.com/posts.json';
+var url  = 'https://us-central1-loindia-6cb36.cloudfunctions.net/storePostData';
 var networkDataReceived = false;
 
 function updateUI(data) {
@@ -171,7 +171,7 @@ form.addEventListener('submit', function(event) {
 })
 
 function sendData() {
-  fetch('https://loindia-6cb36.firebaseio.com/posts.json', {
+  fetch('https://us-central1-loindia-6cb36.cloudfunctions.net/storePostData', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
