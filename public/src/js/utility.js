@@ -44,7 +44,7 @@ function deleteItemsFromData(st,Id) {
     .then(function(db) {
         var tx = db.transaction(st, 'readwrite');
         var store = tx.objectStore(st);
-        store.delete(id);
+        store.delete(Id);
         return tx.complete;
     }).then(function(){
         console.log('Item Deleted');

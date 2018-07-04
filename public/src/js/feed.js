@@ -150,7 +150,7 @@ form.addEventListener('submit', function(event) {
         id: new Date().toISOString(),
         title: titleInput.value,
         location: locationInput.value,
-        image: 'hhjjsh.jpg'
+        image: 'https://i.pinimg.com/originals/f0/cd/89/f0cd89f679af6e1b004d9f00d96d18ae.jpg'
       }
     }
       console.log(post);
@@ -181,7 +181,7 @@ function sendData() {
       id: new Date().toISOString(),
       title: titleInput.value,
       location: locationInput.value,
-      image: 'sjjs.jpg'
+      image: 'https://i.pinimg.com/originals/f0/cd/89/f0cd89f679af6e1b004d9f00d96d18ae.jpg'
     })
   }).then(function(res) {
     console.log('Data sent',res);

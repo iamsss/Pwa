@@ -217,3 +217,39 @@ self.addEventListener('fetch', function (event) {
 //         })
 //     )
 // });
+
+
+self.addEventListener('sync', function(event){
+    console.log('Service Worker Syncing');
+    if(event.tag === 'sync-new-post') {
+        console.log('In the Right Syncing new Post');
+
+        event.waitUntil(
+            readAllData('sync-posts').then(function(data){
+                for(var dt of data) {
+                    fetch('https://loindia-6cb36.firebaseio.com/posts.json', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          id: dt.id,
+                          title: dt.title,
+                          location: dt.location,
+                          image: dt.image
+                        })
+                      }).then(function(res) {
+                        console.log('Data sent',res);
+                        if(res.ok){
+                            deleteItemsFromData('sync-posts',dt.id);
+                        }
+                      })
+                      .catch(function(err) {
+                        console.log('Error while sending data', err);
+                      });
+                }
+            })
+        );
+    }
+})
