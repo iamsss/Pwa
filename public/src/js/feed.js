@@ -3,8 +3,9 @@ var shareImageButton = document.querySelector('#share-image-button');
 var createPostArea = document.querySelector('#create-post');
 var closeCreatePostModalButton = document.querySelector('#close-create-post-modal-btn');
 var sharedMomentsArea = document.querySelector('#shared-moments');
-
-
+var form = document.querySelector('form');
+var titleInput = document.querySelector('#title');
+var locationInput = document.querySelector('#location');
 
 function UnRegisterSw(){
   if ('serviceWorker' in navigator) {
@@ -130,3 +131,60 @@ fetch(url)
         }
       })
   }
+form.addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  if(titleInput.value.trim() === '' || locationInput.value.trim() === ''){
+    alert('Please Enter Valid Data');
+    return;
+  }
+
+  if('serviceWorker' in  navigator && 'SyncManager' in window) {
+   
+    console.log('In If Block');
+    navigator.serviceWorker.register('/sw.js');
+    navigator.serviceWorker.ready
+    .then(function (sw) {
+      console.log('Ready Work')
+      var post ={post1: {
+        id: new Date().toISOString(),
+        title: titleInput.value,
+        location: locationInput.value,
+        image: 'hhjjsh.jpg'
+      }
+    }
+      console.log(post);
+      writeData('sync-posts',post).then(function(){
+        return sw.sync.register('sync-new-post');
+      })
+      .then(function(){
+        var snackbarContainer = document.querySelector('#confirmation-toast');
+        var data = {message: 'Your Post was saved for syncing'};
+        snackbarContainer.MaterialSnackbar.showSnackbar(data);
+
+      })
+    });
+  }else{
+    sendData();
+  }
+  closeCreatePostModal();
+})
+
+function sendData() {
+  fetch('https://loindia-6cb36.firebaseio.com/posts.json', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({
+      id: new Date().toISOString(),
+      title: titleInput.value,
+      location: locationInput.value,
+      image: 'sjjs.jpg'
+    })
+  }).then(function(res) {
+    console.log('Data sent',res);
+    updateUI();
+  })
+}

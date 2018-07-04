@@ -1,7 +1,7 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/utility.js');
 
-var CACHE_STATIC_NAME = 'static-v2.33';
+var CACHE_STATIC_NAME = 'static-v2.45';
 var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 var STATIC_FILES = [
     '/',
@@ -72,6 +72,7 @@ self.addEventListener('activate', function (event) {
             }))
         })
     );
+    event.waitUntil(self.clients.claim());
 });
 
 
