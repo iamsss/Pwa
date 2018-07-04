@@ -92,7 +92,7 @@ function createCard(data) {
   sharedMomentsArea.appendChild(cardWrapper);
 }
 
-var url  = 'https://us-central1-loindia-6cb36.cloudfunctions.net/storePostData';
+var url  = 'https://loindia-6cb36.firebaseio.com/posts.json';
 var networkDataReceived = false;
 
 function updateUI(data) {

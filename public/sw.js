@@ -77,7 +77,7 @@ self.addEventListener('activate', function (event) {
 
 
 self.addEventListener('fetch', function (event) {
-    var url = 'https://us-central1-loindia-6cb36.cloudfunctions.net/storePostData';
+    var url = 'https://loindia-6cb36.firebaseio.com/posts';
     // Cache then Network Strategy Only this part
     if (event.request.url.indexOf(url) > -1) {
         event.respondWith(
@@ -227,7 +227,7 @@ self.addEventListener('sync', function(event){
         event.waitUntil(
             readAllData('sync-posts').then(function(data){
                 for(var dt of data) {
-                    fetch('https://us-central1-loindia-6cb36.cloudfunctions.net/storePostData', {
+                    fetch('https://loindia-6cb36.firebaseio.com/posts.json', {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
