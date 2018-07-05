@@ -44,7 +44,20 @@ function HideNotificationButtons(){
     }
 }
 
+function displayConfirmnotification() {
+  if('serviceWorker' in  navigator) {
+    var options = {
+      body: ' You succesfully suscribed to Notification'
+    };
 
+    navigator.serviceWorker.ready.then(function(swreg) {
+      swreg.showNotification('Sussessfully Suscribed From Sw', options);
+    })
+  }
+  
+
+  new Notification();
+}
 function notifyMe() {
   console.log('In Notify Me');
   // Let's check if the browser supports notifications
@@ -55,8 +68,8 @@ function notifyMe() {
   // Let's check whether notification permissions have already been granted
   else if (Notification.permission === "granted") {
     // If it's okay let's create a notification
-    var notification = new Notification("Hi there!");
     HideNotificationButtons();
+    displayConfirmnotification();
   }
 
   // Otherwise, we need to ask the user for permission
@@ -65,7 +78,7 @@ function notifyMe() {
       // If the user accepts, let's create a notification
       if (permission === "granted") {
         HideNotificationButtons();
-        var notification = new Notification("Hi there!");
+        displayConfirmnotification();  
       }
     });
   }
