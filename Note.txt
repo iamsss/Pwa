@@ -3,3 +3,6 @@ we get back as Post Request
 
 We cannot post real data to server 
 when offline or not after comming online with just cache
+
+
+If we unregister the service worker than existing susbscription wouldnot be worked 
