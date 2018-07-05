@@ -5,3 +5,12 @@
 
 ## Deploying Firebase Project 
     >> firebase deploy
+
+## To Install web-push
+
+    >> npm i --save webpush
+
+## To Generate vapid keys
+
+    >> npm run web-push generate-vapid-keys
+    

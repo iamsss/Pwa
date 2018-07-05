@@ -70,6 +70,52 @@ function displayConfirmnotification() {
     })
   }
 }
+
+function configurePushSub() {
+  if(!('serviceWorker' in navigator)) {
+    return;
+  }
+  var reg;
+  navigator.serviceWorker.ready.then(function(swreg){
+    console.log('Ready Working ..');
+    reg = swreg;
+    return swreg.pushManager.getSubscription();
+  })
+  .then(function(sub){
+    console.log('Sub',sub);
+    if(sub === null) {
+      // create a new Subscription
+      var vapidPublicKey = 'BNqgW3udtCpfYFYS2BGmOrawCpik8jZWYxp0ZKM7JZ25Dijdsbo4r51y7mQqOOo6jvzRCHnIK54TnPcKxnvoiAQ';
+      var convertedVK = urlBase64ToUint8Array(vapidPublicKey);
+      return reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedVK
+      });
+    } else {
+      console.log('OMG IN ELSE BLOCK')
+      // We have Subscription
+
+    }
+  }).then(function(newSub){
+    console.log('New Subs', newSub);
+    return fetch('https://loindia-6cb36.firebaseio.com/subList.json', {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+     },
+     body: JSON.stringify(newSub)
+     })
+  })
+  .then(function(res){
+    if(res.ok){
+      displayConfirmnotification();
+    }
+    }).catch(function(err){
+      console.log(err);
+    });
+}
+
 function notifyMe() {
   console.log('In Notify Me');
   // Let's check if the browser supports notifications
@@ -90,7 +136,7 @@ function notifyMe() {
       // If the user accepts, let's create a notification
       if (permission === "granted") {
         HideNotificationButtons();
-        displayConfirmnotification();  
+        configurePushSub();
       }
     });
   }
