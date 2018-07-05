@@ -69,9 +69,6 @@ function displayConfirmnotification() {
       swreg.showNotification('Sussessfully Suscribed', options);
     })
   }
-  
-
-  new Notification();
 }
 function notifyMe() {
   console.log('In Notify Me');
