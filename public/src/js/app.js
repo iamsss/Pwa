@@ -47,11 +47,26 @@ function HideNotificationButtons(){
 function displayConfirmnotification() {
   if('serviceWorker' in  navigator) {
     var options = {
-      body: ' You succesfully suscribed to Notification'
+      body: ' You succesfully suscribed to Notification',
+      icon: '/src/images/icons/app-icon-96x96.png',
+      image: '/src/sf-boat.jpg',
+      dir: 'ltr',
+      lang: 'en-US',
+      vibrate:[100,50,100],
+      badge:'/src/images/icons/app-icon-96x96.png',
+      tag: 'confirm-notification',
+      renotify: false,
+      actions: [
+        {action: 'confirm', title:'Okay', icon: '/src/images/icons/app-icon-96x96.png'},
+        {action: 'cancel', title:'Cancel', icon: '/src/images/icons/app-icon-96x96.png' }
+      ]
+
+
+
     };
 
     navigator.serviceWorker.ready.then(function(swreg) {
-      swreg.showNotification('Sussessfully Suscribed From Sw', options);
+      swreg.showNotification('Sussessfully Suscribed', options);
     })
   }
   
