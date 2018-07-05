@@ -29,11 +29,19 @@ window.addEventListener('beforeinstallprompt', function(event) {
 
 if("Notification" in window) {
   console.log('In Resgister notification',enableNotificationsButtons)
+  if (Notification.permission != "granted") {
   for(var i=0; i< enableNotificationsButtons.length; i++){
     enableNotificationsButtons[i].style.display = 'inline-block';
     enableNotificationsButtons[i].addEventListener('click',notifyMe);
     console.log('Adding Not Handler')
   }
+}
+}
+
+function HideNotificationButtons(){
+  for(var i=0; i< enableNotificationsButtons.length; i++){
+    enableNotificationsButtons[i].style.display = 'none';   
+    }
 }
 
 
@@ -48,6 +56,7 @@ function notifyMe() {
   else if (Notification.permission === "granted") {
     // If it's okay let's create a notification
     var notification = new Notification("Hi there!");
+    HideNotificationButtons();
   }
 
   // Otherwise, we need to ask the user for permission
@@ -55,6 +64,7 @@ function notifyMe() {
     Notification.requestPermission(function (permission) {
       // If the user accepts, let's create a notification
       if (permission === "granted") {
+        HideNotificationButtons();
         var notification = new Notification("Hi there!");
       }
     });
